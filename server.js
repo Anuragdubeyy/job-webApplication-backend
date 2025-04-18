@@ -9,7 +9,7 @@ dotenv.config();
 const MONGO = process.env.DB_PASSWORD;
 mongoose
   .connect(
-    `mongodb+srv://anuragdubey16017:${MONGO}@crm.e6a4o.mongodb.net/CRM`,
+    `mongodb+srv://anuragdubey16017:${MONGO}@cluster0.q1xsdru.mongodb.net/JOB`,
   )
   .then(() => {
     console.log("Connected to MongoDB successfully");
