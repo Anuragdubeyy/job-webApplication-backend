@@ -17,11 +17,8 @@ const registerAdmin = async (req, res) => {
       name,
       email,
       password,
-      age,
-      dob,
-      work,
       mobile,
-      role: 'admin',
+      role: 'employer',
     });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -48,9 +45,6 @@ const registerUser = async (req, res) => {
       name,
       email,
       password,
-      age,
-      dob,
-      work,
       mobile,
       role:'user'
     });
@@ -96,9 +90,6 @@ const loginUser = async (req, res) => {
             id: user._id,
             name: user.name,
             email: user.email,
-            age: user.age,
-            dob: user.dob,
-            work: user.work,
             mobile: user.mobile,
             role: user.role,
           },

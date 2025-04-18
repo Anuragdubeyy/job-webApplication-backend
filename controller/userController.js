@@ -30,23 +30,24 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Block User (Admin Only)
-const blockUser = async (req, res) => {
+const updateUser = async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Not authorized to access this resource' });
-    }
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    user.isBlocked = true;
+    user.name = req.body.name;
+    user.email = req.body.email;    
+    user.mobile = req.body.mobile;
+    user.password = req.body.password;    
+
     await user.save();
-    res.json({ message: 'User blocked' });
+
+    res.json({ message: 'User updated' });
   } catch (err) {
+    console.error('Error updating user:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-module.exports = { getUsers, deleteUser, blockUser };
+module.exports = { getUsers, deleteUser, updateUser };

@@ -2,15 +2,44 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  age: { type: Number },
-  dob: { type: Date },
-  work: { type: String },
-  mobile: { type: String },
-  role: { type: String, enum: ['user', 'admin'], default: 'user' },
-  isBlocked: { type: Boolean, default: false },
+  name: {
+    type: String,
+    required: [true, 'Please add a name'],
+  },
+  email: {
+    type: String,
+    required: [true, 'Please add an email'],
+    unique: true,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      'Please add a valid email',
+    ],
+  },
+  mobile: {
+    type: String,
+    required: [true, 'Please add a mobile number'],
+    unique: true,
+    match: [
+      /^[6-9]\d{9}$/,
+      'Please add a valid mobile number',
+    ],
+
+  },
+  password: {
+    type: String,
+    required: [true, 'Please add a password'],
+    minlength: 6,
+    select: false,
+  },
+  role: {
+    type: String,
+    enum: ['jobseeker', 'employer'],
+    default: 'jobseeker',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 // Hash password before saving
