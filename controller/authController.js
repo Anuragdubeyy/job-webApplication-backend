@@ -35,27 +35,34 @@ require('dotenv').config();
 // };
 // Register User
 const registerUser = async (req, res) => {
-  const { name, email, password, mobile } = req.body;
+  const { name, email, password, mobile, role, company_name } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
-
-    const user = await User.create({
+    const userData = {
       name,
       email,
       password,
       mobile,
-      role:'jobseeker'
-    });
+      role: role || 'jobseeker',
+    };
+
+    // Add company_name only if role is employer
+    if (role === 'employer') {
+      userData.company_name = company_name;
+    }
+
+    const user = await User.create(userData);
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '30d',
     });
-
-    res.status(201).json({  message: 'Registration successful',token });
+    user.access_token = token;
+    await user.save();
+    res.status(201).json({ message: 'Registration successful', token });
   } catch (err) {
     console.error('Registration error:', err);
     res.status(500).json({ message: 'Server error' });
@@ -86,6 +93,9 @@ const loginUser = async (req, res) => {
       expiresIn: '30d',
     });
 
+    user.access_token = token;
+    await user.save();
+    
     res.status(200).json({
       message: 'Login successful',
       token,
