@@ -1,5 +1,7 @@
+const job = require("../../model/job");
+
 const deleteJob = async (req, res) => {
-    const job = await Job.findById(req.params.id);
+    const job = await job.findById(req.params.id);
   
     if (!job) {
       return next(
@@ -25,4 +27,4 @@ const deleteJob = async (req, res) => {
     });
   };
 
-  module.exports = deleteJob
+  module.exports = {deleteJob}
