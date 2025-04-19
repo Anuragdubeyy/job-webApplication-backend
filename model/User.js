@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { Schema } = mongoose;
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -18,12 +19,15 @@ const userSchema = new mongoose.Schema({
   mobile: {
     type: String,
     required: [true, 'Please add a mobile number'],
-    unique: true,
     match: [
       /^[6-9]\d{9}$/,
       'Please add a valid mobile number',
     ],
 
+  },
+  access_token: {
+    type: String,
+    required: true,
   },
   password: {
     type: String,
@@ -36,10 +40,21 @@ const userSchema = new mongoose.Schema({
     enum: ['jobseeker', 'employer'],
     default: 'jobseeker',
   },
+  company_name: {
+    type: String,
+    required: function() { return this.role === 'employer'; },
+    unique: true,
+    default: "",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+
 });
 
 // Hash password before saving
@@ -54,4 +69,21 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword.trim(), this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+const employer = User.discriminator(
+  "Employer",
+  new Schema({
+    team_id: { type: Schema.Types.ObjectId, ref: "Team" }, // Single reference for Employee
+  })
+);
+
+const JobSeeker = User.discriminator(
+  "jobSeeker",
+  new Schema({
+    team_id: { type: Schema.Types.ObjectId, ref: "Team" }, // Single reference for Employee
+  })
+);
+
+
+module.exports = { User, employer, JobSeeker };

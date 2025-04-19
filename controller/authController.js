@@ -1,39 +1,41 @@
 const jwt = require('jsonwebtoken');
-const User = require('../model/user');
+const {User} = require('../model/user');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 // Register Admin
-const registerAdmin = async (req, res) => {
-  const { name, email, password, age, dob, work, mobile } = req.body;
+// const registerAdmin = async (req, res) => {
+//   const { name, email, password, company_name, work, mobile } = req.body;
 
-  try {
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
+//   try {
+//     const userExists = await User.findOne({ email });
+//     if (userExists) {
+//       return res.status(400).json({ message: 'User already exists' });
+//     }
 
-    const user = await User.create({
-      name,
-      email,
-      password,
-      mobile,
-      role: 'employer',
-    });
+//     const user = await User.create({
+//       name,
+//       email,
+//       password,
+//       mobile,
+//       company_name,
+//       work,
+//       role: 'employer',
+//     });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '30d',
-    });
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+//       expiresIn: '30d',
+//     });
 
-    res.status(201).json({ token });
-  } catch (err) {
-    console.error('Registration error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+//     res.status(201).json({ token });
+//   } catch (err) {
+//     console.error('Registration error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
 // Register User
 const registerUser = async (req, res) => {
-  const { name, email, password, age, dob, work, mobile } = req.body;
+  const { name, email, password, mobile } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
@@ -46,7 +48,7 @@ const registerUser = async (req, res) => {
       email,
       password,
       mobile,
-      role:'user'
+      role:'jobseeker'
     });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -64,44 +66,40 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
 
-    if (user) {
-      console.log('User found:', user.email);
-      console.log('Stored hashed password:', user.password);
-      console.log('Entered password:', password);
-
-      const isMatch = await user.comparePassword(password.trim());
-      console.log('Password match:', isMatch);
-
-      if (isMatch) {
-        if (user.isBlocked) {
-          return res.status(403).json({ message: 'User is blocked' });
-        }
-
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-          expiresIn: '30d',
-        });
-
-        return res.status(200).json({
-          message: 'Login successful',
-          token,
-          user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            mobile: user.mobile,
-            role: user.role,
-          },
-        });
-      }
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    res.status(401).json({ message: 'Invalid email or password' });
+    const isMatch = await user.comparePassword(password.trim());
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    if (user.isBlocked) {
+      return res.status(403).json({ message: 'User is blocked' });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '30d',
+    });
+
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        role: user.role,
+      },
+    });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-module.exports = { registerAdmin, registerUser, loginUser };
+module.exports = {  registerUser, loginUser };
