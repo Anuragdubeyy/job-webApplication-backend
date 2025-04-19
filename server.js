@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/userRoute');
 const employerRoutes = require('./routes/employers');
+const jobSeekers = require('./routes/jobSeekers');
 const { default: mongoose } = require('mongoose');
 
 dotenv.config();
@@ -26,5 +27,6 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/employers', employerRoutes);
+app.use('/api/users', jobSeekers);
 const PORT =  5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
