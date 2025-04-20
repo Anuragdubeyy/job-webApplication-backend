@@ -1,0 +1,76 @@
+const Job = require("../../model/job");
+const Application = require("../../model/application");
+
+const applyForJob = async (req, res, next) => {
+  try {
+    // Validate required fields
+    const requiredFields = [
+      'name', 'experience_year', 'currently_working',
+      'notice_period', 'current_salary', 'expected_salary',
+      'resume', 'skills'
+    ];
+    
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        return next(`Please provide ${field}`, 400);
+      }
+    }
+
+    // Check if skills array has at least one item
+    if (!req.body.skills || req.body.skills.length === 0) {
+      return next('Please add at least one skill', 400);
+    }
+
+    // Check if job exists
+    const jobToApply = await Job.findById(req.params.jobId);
+    if (!jobToApply) {
+      return next(`No job found with ID ${req.params.jobId}`, 404);
+    }
+
+    // // Check if user is not trying to apply to their own job
+    // if (jobToApply.employer.toString() === req.user.id) {
+    //   return next('You cannot apply to your own job posting', 400);
+    // }
+
+    // Check if already applied
+    const alreadyApplied = await Application.findOne({
+      job: req.params.jobId,
+      applicant: req.user.id
+    });
+
+    if (alreadyApplied) {
+      return next('You have already applied for this job', 400);
+    }
+
+    // application data
+    const applicationData = {
+      job: req.params.jobId,
+      applicant: req.user.id,
+      name: req.body.name,
+      experience_year: req.body.experience_year,
+      currently_working: req.body.currently_working,
+      notice_period: req.body.notice_period,
+      linkedIn_link: req.body.linkedIn_link,
+      portfolio: req.body.portfolio,
+      experience: req.body.experience || [],
+      current_salary: req.body.current_salary,
+      expected_salary: req.body.expected_salary,
+      resume: req.body.resume,
+      coverLetter: req.body.coverLetter || '',
+      skills: req.body.skills,
+      status: 'pending'
+    };
+
+    // Create application
+    const application = await Application.create(applicationData);
+
+    res.status(201).json({
+      success: true,
+      data: application
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { applyForJob };
