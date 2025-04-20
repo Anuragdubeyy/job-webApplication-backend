@@ -26,7 +26,7 @@ router.route('/applications')
 router.route('/applications/:applicationId')
   .delete(withdrawApplication);
 
-router.route('/profile')
+router.route('/update-profile')
   .put(updateProfile);
 
 module.exports = router;
