@@ -5,11 +5,16 @@ const applyForJob = async (req, res, next) => {
   try {
     // Validate required fields
     const requiredFields = [
-      'name', 'experience_year', 'currently_working',
-      'notice_period', 'current_salary', 'expected_salary',
-      'resume', 'skills'
+      "name",
+      "experience_year",
+      "currently_working",
+      "notice_period",
+      "current_salary",
+      "expected_salary",
+      "resume",
+      "skills",
     ];
-    
+
     for (const field of requiredFields) {
       if (!req.body[field]) {
         return next(`Please provide ${field}`, 400);
@@ -18,7 +23,7 @@ const applyForJob = async (req, res, next) => {
 
     // Check if skills array has at least one item
     if (!req.body.skills || req.body.skills.length === 0) {
-      return next('Please add at least one skill', 400);
+      return next("Please add at least one skill", 400);
     }
 
     // Check if job exists
@@ -35,11 +40,11 @@ const applyForJob = async (req, res, next) => {
     // Check if already applied
     const alreadyApplied = await Application.findOne({
       job: req.params.jobId,
-      applicant: req.user.id
+      applicant: req.user.id,
     });
 
     if (alreadyApplied) {
-      return next('You have already applied for this job', 400);
+      return next("You have already applied for this job", 400);
     }
 
     // application data
@@ -56,17 +61,42 @@ const applyForJob = async (req, res, next) => {
       current_salary: req.body.current_salary,
       expected_salary: req.body.expected_salary,
       resume: req.body.resume,
-      coverLetter: req.body.coverLetter || '',
+      coverLetter: req.body.coverLetter || "",
       skills: req.body.skills,
-      status: 'pending'
+      status: "pending",
     };
 
     // Create application
     const application = await Application.create(applicationData);
 
+    // Update job seeker profile with application details
+    await JobSeekerDetail.findOneAndUpdate(
+      { user: req.user.id },
+      {
+        $set: {
+          name: req.body.name,
+          skills: req.body.skills,
+          experience: req.body.experience,
+          resume: req.body.resume,
+          current_salary: req.body.current_salary,
+          expected_salary: req.body.expected_salary,
+          notice_period: req.body.notice_period,
+          linkedIn_link: req.body.linkedIn_link,
+          portfolio: req.body.portfolio,
+        },
+        $addToSet: {
+          appliedJobs: {
+            jobId: req.params.jobId,
+            status: "pending",
+          },
+        },
+      },
+      { upsert: true, new: true }
+    );
+
     res.status(201).json({
       success: true,
-      data: application
+      data: application,
     });
   } catch (err) {
     next(err);

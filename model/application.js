@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+const EducationSchema = new mongoose.Schema({
+  degree: String,
+  institution: String,
+  fieldOfStudy: String,
+  startYear: String,
+  endYear: String
+});
+
 const ExperienceSchema = new mongoose.Schema({
   company_name: {
     type: String,
@@ -76,6 +84,7 @@ const ApplicationSchema = new mongoose.Schema({
     }
   },
   experience: [ExperienceSchema],
+  education: [EducationSchema],
   current_salary: {
     type: String,
     required: true
