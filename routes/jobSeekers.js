@@ -9,6 +9,7 @@ const { getMyApplications } = require('../controller/job-seekers/ApplyedJobList'
 const { withdrawApplication } = require('../controller/job-seekers/withdrawJob');
 const { updateProfile } = require('../controller/job-seekers/updateprofile');
 const { protect, authorize } = require('../middelware/auth');
+const { getSingleJobDetails } = require('../controller/job-seekers/getSinglejobDetail');
 
 // All routes protected and only for job seekers
 router.use(protect);
@@ -16,6 +17,9 @@ router.use(authorize('jobseeker'));
 
 router.route('/jobs')
   .get(getAllJobs);
+
+router.route('/jobs/:jobId')
+  .get(getSingleJobDetails);
 
 router.route('/jobs/apply/:jobId')
   .post(applyForJob);
