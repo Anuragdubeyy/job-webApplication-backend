@@ -33,11 +33,6 @@ const applyForJob = async (req, res, next) => {
       return next(`No job found with ID ${req.params.jobId}`, 404);
     }
 
-    // // Check if user is not trying to apply to their own job
-    // if (jobToApply.employer.toString() === req.user.id) {
-    //   return next('You cannot apply to your own job posting', 400);
-    // }
-
     // Check if already applied
     const alreadyApplied = await Application.findOne({
       job: req.params.jobId,

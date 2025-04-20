@@ -25,7 +25,7 @@ const app = express();
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/superAdmin', userRoutes);
 app.use('/api/employers', employerRoutes);
 app.use('/api/users', jobSeekers);
 const PORT =  5000;
