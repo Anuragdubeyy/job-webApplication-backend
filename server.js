@@ -35,9 +35,7 @@ mongoose
 
 
 
-app.use('/api', (req, res) => {
-  res.status(200).json({ message: 'API is working' });
-})
+
 app.use('/api/auth', authRoutes);
 app.use('/api/superAdmin', userRoutes);
 app.use('/api/employers', employerRoutes);
