@@ -1,5 +1,6 @@
 const Job = require("../../model/job");
 const Application = require("../../model/application");
+const { JobSeekerDetail } = require("../../model/profileDetail");
 
 const applyForJob = async (req, res, next) => {
   try {
@@ -44,7 +45,11 @@ const applyForJob = async (req, res, next) => {
     });
 
     if (alreadyApplied) {
-      return next("You have already applied for this job", 400);
+      return res.status(200).json({
+        success: false,
+        message: "You have already applied for this job",
+        // data: alreadyApplied,
+      });
     }
 
     // application data

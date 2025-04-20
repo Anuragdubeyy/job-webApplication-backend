@@ -12,6 +12,7 @@ const {
 } = require("../controller/employers/applyedJobSeekersList");
 const { updateJob } = require("../controller/employers/updateJobPost");
 const { deleteJob } = require("../controller/employers/deleteJobPost");
+const { updateProfile } = require("../controller/job-seekers/updateprofile");
 
 // All routes protected and only for employers
 router.use(protect);
@@ -27,4 +28,6 @@ router
   .put(updateJob) // Update job
   .delete(deleteJob); // Delete job
 
+router.route('/update-profile')
+  .put(updateProfile);
 module.exports = router;
