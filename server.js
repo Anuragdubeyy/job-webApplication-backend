@@ -24,7 +24,7 @@ app.options("*", cors());
 const MONGO = process.env.DB_PASSWORD;
 mongoose
   .connect(
-    `mongodb+srv://anuragdubey16017:${MONGO}@cluster0.q1xsdru.mongodb.net/JOB?retryWrites=true&w=majority`
+    `mongodb+srv://anuragdubey16017:${MONGO}@cluster0.q1xsdru.mongodb.net/JOB`
   )
   .then(() => {
     console.log("Connected to MongoDB successfully");
