@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const {User} = require('../model/user');
 const bcrypt = require('bcryptjs');
+const  User  = require('../model/user');
 require('dotenv').config();
 
 // Register Admin
