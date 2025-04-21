@@ -68,20 +68,16 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword.trim(), this.password);
 };
 
+// Create the base User model
 const User = mongoose.model("User", userSchema);
 
-const employer = User.discriminator(
-  "Employer",
-  new Schema({
-    team_id: { type: Schema.Types.ObjectId, ref: "Team" }, // Single reference for Employee
-  })
-);
+// Now you can create discriminators for specific roles
+const Employer = User.discriminator("Employer", new Schema({
+  team_id: { type: Schema.Types.ObjectId, ref: "Team" }, // Single reference for Employee
+}));
 
-const JobSeeker = User.discriminator(
-  "jobSeeker",
-  new Schema({
-    team_id: { type: Schema.Types.ObjectId, ref: "Team" }, // Single reference for Employee
-  })
-);
+const JobSeeker = User.discriminator("JobSeeker", new Schema({
+  team_id: { type: Schema.Types.ObjectId, ref: "Team" }, // Single reference for Employee
+}));
 
-module.exports = { User, employer, JobSeeker };
+module.exports = { User, Employer, JobSeeker };

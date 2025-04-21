@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('../model/User');
+const { User } = require('../model/User');
 require('dotenv').config();
 
 // Register Admin
@@ -73,13 +73,13 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('+password'); // Find the user
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const isMatch = await user.comparePassword(password.trim());
+    const isMatch = await user.comparePassword(password.trim());  // Check password match
 
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
@@ -95,7 +95,7 @@ const loginUser = async (req, res) => {
 
     user.access_token = token;
     await user.save();
-    
+
     res.status(200).json({
       message: 'Login successful',
       token,
@@ -112,4 +112,5 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 module.exports = {  registerUser, loginUser };
