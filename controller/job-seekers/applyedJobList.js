@@ -1,5 +1,7 @@
+const application = require("../../model/application");
+
 const getMyApplications = async (req, res) => {
-    const applications = await Application.find({ applicant: req.user.id })
+    const applications = await application.find({ applicant: req.user.id })
       .populate({
         path: 'job',
         select: 'title company location salary type',

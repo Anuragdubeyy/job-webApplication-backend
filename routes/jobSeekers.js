@@ -5,9 +5,9 @@ const router = express.Router();
 
 const { getAllJobs } = require('../controller/job-seekers/getAllJobList');
 const { applyForJob } = require('../controller/job-seekers/applyNewJob');
-const { getMyApplications } = require('../controller/job-seekers/ApplyedJobList');
 const { withdrawApplication } = require('../controller/job-seekers/withdrawJob');
 const { updateProfile } = require('../controller/job-seekers/updateprofile');
+const { getMyApplications } = require('../controller/job-seekers/applyedJobList');
 const { protect, authorize } = require('../middelware/auth');
 const { getSingleJobDetails } = require('../controller/job-seekers/getSinglejobDetail');
 const { applyForJobValidation } = require('../middelware/applyForJobMiddleware');
