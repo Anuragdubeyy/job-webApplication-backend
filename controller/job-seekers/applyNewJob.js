@@ -93,7 +93,7 @@ const applyForJob = async (req, res, next) => {
       },
       { upsert: true, new: true }
     );
-
+    console.log(res.body);
     res.status(201).json({
       success: true,
       data: application,
