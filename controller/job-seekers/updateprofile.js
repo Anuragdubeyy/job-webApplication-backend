@@ -1,5 +1,5 @@
 const { JobSeekerDetail, EmployerDetail } = require("../../model/profileDetail");
-const { User } = require("../../model/user");
+const User = require('../model/User');
 
 const updateProfile = async (req, res, next) => {
   try {
