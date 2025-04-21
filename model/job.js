@@ -50,7 +50,7 @@ const JobSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['IT', 'Marketing', 'Finance', 'Healthcare', 'Education', 'Engineering', 'Design', 'Customer Service']
+    enum: ['it', 'marketing','sales', 'finance', 'healthcare', 'education', 'engineer', 'design', 'customerService']
   },
   experienceLevel: {
     type: String,
