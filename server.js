@@ -37,7 +37,14 @@ mongoose
 app.get("/api/hello", (req, res) => {
   res.status(200).json({ message: "Hello Node.js" });
 });
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.get("/uploads/:filename", (req, res) => {
+  const filePath = path.join("/tmp/uploads", req.params.filename);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).send("File not found");
+    }
+  });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/superAdmin", userRoutes);
 app.use("/api/employers", employerRoutes);
