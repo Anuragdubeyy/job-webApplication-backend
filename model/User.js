@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const { Schema } = mongoose;
 
+// Base User Schema
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -38,14 +39,6 @@ const userSchema = new mongoose.Schema({
     enum: ["jobseeker", "employer"],
     default: "jobseeker",
   },
-  company_name: {
-    type: String,
-    required: function () {
-      return this.role === 'employer';
-    },
-    unique: true,
-    sparse: true, // Ensure sparse indexing
-  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -54,7 +47,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, { discriminatorKey: 'role' });
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
@@ -71,13 +64,33 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 // Create the base User model
 const User = mongoose.model("User", userSchema);
 
-// Now you can create discriminators for specific roles
-const Employer = User.discriminator("Employer", new Schema({
-  team_id: { type: Schema.Types.ObjectId, ref: "Team" }, // Single reference for Employee
-}));
+// Employer Schema - includes company_name
+const employerSchema = new Schema({
+  company_name: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  team_id: { 
+    type: Schema.Types.ObjectId, 
+    ref: "Team" 
+  },
+});
 
-const JobSeeker = User.discriminator("JobSeeker", new Schema({
-  team_id: { type: Schema.Types.ObjectId, ref: "Team" }, // Single reference for Employee
-}));
+// Create a partial index for company_name
+employerSchema.index({ company_name: 1 }, { unique: true, partialFilterExpression: { role: "employer" } });
+
+// JobSeeker Schema - no company_name field
+const jobSeekerSchema = new Schema({
+  team_id: { 
+    type: Schema.Types.ObjectId, 
+    ref: "Team" 
+  },
+});
+
+// Create discriminators
+const Employer = User.discriminator("employer", employerSchema);
+const JobSeeker = User.discriminator("jobseeker", jobSeekerSchema);
 
 module.exports = { User, Employer, JobSeeker };
