@@ -34,4 +34,33 @@ const getJobApplicants = async (req, res, next) => {
   }
 };
 
-module.exports = { getJobApplicants };
+const getAllJobApplicants = async (req, res, next) => {
+  try {
+    const employerId = req.user.id;
+
+    // Get all applications for jobs created by this employer
+    const applications = await Application.find()
+      .populate({
+        path: "applicant",
+        select: "name email mobile resume skills experience", // Applicant details
+      })
+      .populate({
+        path: "job",
+        match: { employer: employerId }, // Only jobs by this employer
+        select: "title description location", // Job details
+      });
+
+    // Filter applications where the job belongs to the employer
+    const filteredApplications = applications.filter(app => app.job);
+
+    res.status(200).json({
+      success: true,
+      count: filteredApplications.length,
+      data: filteredApplications,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { getJobApplicants, getAllJobApplicants };

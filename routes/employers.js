@@ -9,6 +9,7 @@ const {
 const { createJob } = require("../controller/employers/postNewJob");
 const {
   getJobApplicants,
+  getAllJobApplicants,
 } = require("../controller/employers/applyedJobSeekersList");
 const { updateJob } = require("../controller/employers/updateJobPost");
 const { deleteJob } = require("../controller/employers/deleteJobPost");
@@ -23,6 +24,8 @@ router.route("/jobs/").get(getEmployerJobs);
 router.route("/jobs/create").post(createJob);
 
 router.route("/jobs/applicants/:jobId").get(getJobApplicants);
+router.route("/jobs/applicants").get(getAllJobApplicants);
+
 router
   .route("/jobs/:id")
   .put(updateJob) // Update job

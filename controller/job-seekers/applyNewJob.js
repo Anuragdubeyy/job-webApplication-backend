@@ -2,9 +2,15 @@ const Job = require("../../model/job");
 const Application = require("../../model/application");
 const { JobSeekerDetail } = require("../../model/profileDetail");
 
+const isValidUrl = (url) => {
+  const urlPattern = /^(https?:\/\/)?([\w\d-]+\.)+[a-z]{2,}(:\d+)?(\/\S*)?$/i;
+  return urlPattern.test(url);
+};
+
 const applyForJob = async (req, res, next) => {
   try {
     // Validate required fields
+    console.log(req.file);
     const requiredFields = [
       "name",
       "experience_year",
@@ -12,7 +18,6 @@ const applyForJob = async (req, res, next) => {
       "notice_period",
       "current_salary",
       "expected_salary",
-      "resume",
       "skills",
     ];
 
@@ -46,6 +51,14 @@ const applyForJob = async (req, res, next) => {
         // data: alreadyApplied,
       });
     }
+    if (!isValidUrl(req.body.linkedIn_link)) {
+      return next("Invalid LinkedIn URL", 400);
+    }
+    if (req.body.portfolio && !isValidUrl(req.body.portfolio)) {
+      return next("Invalid Portfolio URL", 400);
+    }
+
+    const experienceData = JSON.parse(req.body.experience);
 
     // application data
     const applicationData = {
@@ -57,10 +70,10 @@ const applyForJob = async (req, res, next) => {
       notice_period: req.body.notice_period,
       linkedIn_link: req.body.linkedIn_link,
       portfolio: req.body.portfolio,
-      experience: req.body.experience || [],
+      experience: experienceData || [],
       current_salary: req.body.current_salary,
       expected_salary: req.body.expected_salary,
-      resume: req.body.resume,
+      resume: `https://job-web-application-backend.vercel.app/uploads/${req.file.filename}`,
       coverLetter: req.body.coverLetter || "",
       skills: req.body.skills,
       status: "pending",
@@ -69,6 +82,11 @@ const applyForJob = async (req, res, next) => {
     // Create application
     const application = await Application.create(applicationData);
 
+    await Job.findByIdAndUpdate(
+      req.params.jobId,
+      { $inc: { applicationsCount: 1 } },
+      { new: true }
+    );
     // Update job seeker profile with application details
     await JobSeekerDetail.findOneAndUpdate(
       { user: req.user.id },
@@ -77,7 +95,7 @@ const applyForJob = async (req, res, next) => {
           name: req.body.name,
           skills: req.body.skills,
           experience: req.body.experience,
-          resume: req.body.resume,
+          resume: `https://job-web-application-backend.vercel.app/uploads/${req.file.filename}`,
           current_salary: req.body.current_salary,
           expected_salary: req.body.expected_salary,
           notice_period: req.body.notice_period,
