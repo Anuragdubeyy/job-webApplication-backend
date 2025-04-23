@@ -3,9 +3,9 @@ const multer = require('multer');
 const path = require('path');
 
 // Define storage configuration for multer
-const uploadPath = path.join('/tmp', 'uploads');
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
+const uploadDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Define storage configuration for multer
