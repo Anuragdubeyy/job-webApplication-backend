@@ -11,7 +11,8 @@ const EducationSchema = new mongoose.Schema({
 const ExperienceSchema = new mongoose.Schema({
   company_name: {
     type: String,
-    required: true
+    required: true,
+    index: true
   },
   job_title: {
     type: String,
