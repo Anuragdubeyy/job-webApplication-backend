@@ -18,10 +18,10 @@ Supports two roles:
 
 **Test Credentials:**
 - **Job Seeker:**
-  - Email: anuragdubey@gmail.com
+  - Email: kunal@gmail.com
   - Password: 12345678
 - **Employer:**
-  - Email: poojaniar@gmail.com
+  - Email: pooja@infotech.com
   - Password: 12345678
 
 ### 2. Employer Features
